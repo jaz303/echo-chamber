@@ -16,7 +16,13 @@ In addition to the following you'll need to add some CSS to your project. Check 
 
 ### npm
 
-    $ npm install echo-chamber
+Get it:
+
+  npm install echo-chamber
+
+Require it:
+
+  var EchoChamber = require('echo-chamber');
 
 ### UMD
 
