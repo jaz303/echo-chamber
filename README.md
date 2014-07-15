@@ -115,6 +115,10 @@ Focus on the console.
 
 ## Handling User Input
 
+When the user presses enter the user supplied handler function is called and receives the console instance and the command string as parameters. Behind the scenes, the console is now in "processing" mode, meaning that further terminal input will be ignored until processing is complete.
+
+Use `konsole.print()` to output text during processing, or `konsole.append()` to output a DOM node. Once processing is complete simply call `konsole.newline()` to begin the next line of user input. Processing, of course, may be performed asynchronously.
+
 ## Copyright &amp; License
 
 &copy; 2014 Jason Frame [ [@jaz303](http://twitter.com/jaz303) / [jason@onehackoranother.com](mailto:jason@onehackoranother.com) ]
