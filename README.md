@@ -6,24 +6,23 @@
 
 But that's up to you - it's fully stylable with CSS.
 
-As well as text the widget can host arbitrary HTML content.
+As well as text the widget can host arbitrary HTML content (see `konsole.append(el)`).
 
 __This is not an ANSI/VT100 terminal emulator!__
 
 ## Default CSS
 
 ```css
-/* Console Defaults */
-
 .console {
-	line-height: 1;
+	line-height: 1.2;
 }
 
 .console:focus {
 	outline: none;
 }
 
-.console textarea {
+/* Shim text area for receiving keyboard input */
+.console > textarea {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -39,11 +38,19 @@ __This is not an ANSI/VT100 terminal emulator!__
 }
 
 /* Line or other item */
-.console .l {}
+.console > .item {}
+
+/* Text line */
+.console > .text {
+  white-space: pre-wrap;
+}
+
+/* Line currently receiving input */
+.console > .input {}
 
 /* Prompt */
-.console .p {}
+.console > .item > .prompt {}
 
 /* Cursor */
-.console .c {}
+.console > .input > .cursor {}
 ```

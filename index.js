@@ -9,8 +9,7 @@ var S_INIT              = 0,
 var DEFAULT_PROMPT      = '> ';
 var DEFAULT_PROMPT_NONE = null;
 var ECHO_HANDLER        = function(console, cmd) { console.print(cmd); }
-var NBSP                = String.fromCharCode(160);
-var SPACE               = RegExp(NBSP, "g");
+var SPACE_CHAR          = ' ';
 
 function mapChar(ch) {
     return ch === ' ' ? NBSP : ch;
@@ -64,7 +63,7 @@ Console.prototype.getInput = function() {
     if (this.state !== S_INPUT)
         throw new Error("cannot get console input - illegal state");
 
-    return this._getRawInputFromElement(this._inputLine).replace(NBSP, ' ');
+    return this._getRawInputFromElement(this._inputLine);
     
 }
 
@@ -81,6 +80,10 @@ Console.prototype.print = function(str) {
     
     this._appendLine(str.substr(start));
 
+}
+
+Console.prototype.append = function(el, className) {
+    this._appendElement(el, className);
 }
 
 Console.prototype.clearInput = function() {
@@ -138,7 +141,7 @@ Console.prototype.newline = function() {
     }
     
     this._cursor = document.createElement('span');
-    this._cursor.textContent = NBSP;
+    this._cursor.textContent = ' ';
     this._cursor.className = 'cursor';
     this._inputLine.appendChild(this._cursor);
     
@@ -212,7 +215,7 @@ Console.prototype._keypress = function(evt) {
                 break;
             case 32: /* space - insert &nbsp; */
                 this._clearSelection();
-                this._insertStringBeforeCursor(NBSP);
+                this._insertStringBeforeCursor(SPACE_CHAR);
                 break;
             default:
                 // TODO: ignore if meta-key (alt, option, cmd) is engaged
@@ -305,10 +308,20 @@ Console.prototype._appendLine = function(str) {
 
     var line = document.createElement('div');
     line.className = 'item text';
-    line.appendChild(document.createTextNode(sanitize(str)));
+    line.appendChild(document.createTextNode(str));
     line.appendChild(document.createElement('br'));
 
     this.root.appendChild(line);
+
+}
+
+Console.prototype._appendElement = function(el, className) {
+    
+    var wrap = document.createElement('div');
+    wrap.className = 'item ' + (className || '');
+    wrap.appendChild(el);
+
+    this.root.appendChild(wrap);
 
 }
 
@@ -317,7 +330,7 @@ Console.prototype._insertStringBeforeCursor = function(str) {
 
     for (var i = 0; i < str.length; i++) {
         var ch = document.createElement('span');
-        ch.textContent = mapChar(str.charAt(i));
+        ch.textContent = str.charAt(i);
         this._inputLine.insertBefore(ch, this._cursor);
     }
 }
