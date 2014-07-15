@@ -42,7 +42,7 @@ __This is not an ANSI/VT100 terminal emulator!__
 
 /* Text line */
 .console > .text {
-  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 /* Line currently receiving input */

@@ -9,14 +9,24 @@ var S_INIT              = 0,
 var DEFAULT_PROMPT      = '> ';
 var DEFAULT_PROMPT_NONE = null;
 var ECHO_HANDLER        = function(console, cmd) { console.print(cmd); }
-var SPACE_CHAR          = ' ';
 
-function mapChar(ch) {
-    return ch === ' ' ? NBSP : ch;
+//
+// Space Handling
+
+var VISUAL_SPACE        = String.fromCharCode(160);
+var RE_VS               = new RegExp(VISUAL_SPACE, 'g');
+var RE_LS               = / /g;
+
+function logicalSpaceToVisualSpace(ch) {
+    return ch === ' ' ? VISUAL_SPACE : ch;
 }
 
-function sanitize(str) {
-    return str.replace(/ /g, NBSP);
+function replaceLogicalSpaceWithVisualSpace(str) {
+    return str.replace(RE_LS, VISUAL_SPACE);
+}
+
+function replaceVisualSpaceWithLogicalSpace(str) {
+    return str.replace(RE_VS, ' ');
 }
 
 /**
@@ -63,7 +73,7 @@ Console.prototype.getInput = function() {
     if (this.state !== S_INPUT)
         throw new Error("cannot get console input - illegal state");
 
-    return this._getRawInputFromElement(this._inputLine);
+    return replaceVisualSpaceWithLogicalSpace(this._getRawInputFromElement(this._inputLine));
     
 }
 
@@ -141,7 +151,7 @@ Console.prototype.newline = function() {
     }
     
     this._cursor = document.createElement('span');
-    this._cursor.textContent = ' ';
+    this._cursor.textContent = VISUAL_SPACE;
     this._cursor.className = 'cursor';
     this._inputLine.appendChild(this._cursor);
     
@@ -206,20 +216,26 @@ Console.prototype._keypress = function(evt) {
     var input, result;
 
     if (this.state === S_INPUT) {
+
+        if (evt.charCode === 13 || evt.keyCode === 13) {
+            evt.preventDefault();
+            this._clearSelection();
+            input = this.getInput();
+            this.state = S_PROCESSING;
+            this._handler(this, input);
+            return;
+        }
+
         switch (evt.charCode) {
-            case 13: /* enter */
-                this._clearSelection();
-                input = this.getInput();
-                this.state = S_PROCESSING;
-                this._handler(this, input);
-                break;
             case 32: /* space - insert &nbsp; */
+                evt.preventDefault();
                 this._clearSelection();
-                this._insertStringBeforeCursor(SPACE_CHAR);
+                this._insertStringBeforeCursor(VISUAL_SPACE);
                 break;
             default:
                 // TODO: ignore if meta-key (alt, option, cmd) is engaged
                 if (evt.charCode > 32 && evt.charCode < 127) {
+                    evt.preventDefault();
                     this._clearSelection();
                     this._insertStringBeforeCursor(String.fromCharCode(evt.charCode));
                 } else {
@@ -269,7 +285,7 @@ Console.prototype._scrollToBottom = function() {
 }
 
 Console.prototype._clearSelection = function() {
-    window.getSelection().empty();
+    //window.getSelection().empty();
 }
 
 Console.prototype._backspace = function() {
@@ -308,7 +324,7 @@ Console.prototype._appendLine = function(str) {
 
     var line = document.createElement('div');
     line.className = 'item text';
-    line.appendChild(document.createTextNode(str));
+    line.appendChild(document.createTextNode(replaceLogicalSpaceWithVisualSpace(str)));
     line.appendChild(document.createElement('br'));
 
     this.root.appendChild(line);
@@ -330,7 +346,7 @@ Console.prototype._insertStringBeforeCursor = function(str) {
 
     for (var i = 0; i < str.length; i++) {
         var ch = document.createElement('span');
-        ch.textContent = str.charAt(i);
+        ch.textContent = logicalSpaceToVisualSpace(str.charAt(i));
         this._inputLine.insertBefore(ch, this._cursor);
     }
 }
