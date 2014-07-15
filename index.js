@@ -3,12 +3,12 @@ var du = require('domutil');
 module.exports = Console;
 
 var S_INIT              = 0,
-	S_INPUT             = 1,
-	S_PROCESSING        = 2;
+    S_INPUT             = 1,
+    S_PROCESSING        = 2;
 
 var DEFAULT_PROMPT      = '> ';
 var DEFAULT_PROMPT_NONE = null;
-var ECHO_HANDLER        = function(console, cmd) { console.print(cmd); }
+var ECHO_HANDLER        = function(console, cmd) { console.print(cmd); console.newline(); }
 
 //
 // Space Handling
@@ -37,15 +37,15 @@ function Console(el, opts) {
 
     opts = opts || {};
 
-	this.root           = el;
+    this.root           = el;
     this.state          = S_INIT;
     this._textarea      = null;
     this._prompt        = null;
-    this._handler       = null;
+    this._handler       = opts.handler || ECHO_HANDLER;
     this._cursor        = null;
     this._inputLine     = null;
 
-    var needsTextarea = false; // TODO: determine automatically (true == tablet/phone)
+    var needsTextarea = ('capabilities' in opts) ? !!(opts.capabilities.touch) : false;
     var tabIndex = opts.tabIndex || 0;
     
     if (needsTextarea) {
@@ -63,8 +63,6 @@ function Console(el, opts) {
     } else {
         this._prompt = DEFAULT_PROMPT;
     }
-
-    this._handler = opts.handler || ECHO_HANDLER;
 
     if ('greeting' in opts) {
         this.print(opts.greeting);

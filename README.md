@@ -10,35 +10,45 @@ As well as text the widget can host arbitrary HTML content (see `konsole.append(
 
 __This is not an ANSI/VT100 terminal emulator!__
 
+## Installation
+
+In addition to the following you'll need to add some CSS to your project. Check out the Default CSS section, below, for a starting point.
+
+### npm
+
+    $ npm install echo-chamber
+
+### UMD
+
+Copy and paste either `build/echo-chamber.js` or `build/echo-chamber.min.js` into your project.
+
 ## Default CSS
 
 ```css
-/* Console Defaults */
-
 .console {
-	line-height: 1.2;
+  line-height: 1.2;
   overflow: auto;
 }
 
 .console:focus {
-	outline: none;
+  outline: none;
 }
 
 /* Shim text area for receiving keyboard input */
 .console > textarea {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	border: none;
-	overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: none;
+  overflow: hidden;
   background: none;
 }
 
 .console > textarea:focus {
-	outline: none;
+  outline: none;
 }
 
 /* Line or other item */
@@ -58,3 +68,49 @@ __This is not an ANSI/VT100 terminal emulator!__
 /* Cursor */
 .console > .input > .cursor {}
 ```
+
+## API
+
+#### `var konsole = new EchoChamber(el, [opts])`
+
+Create a new console rooted in the empty div `el`.
+
+Supported options:
+
+  * `capabilities`: a `Modernizr`-like feature-detection object, used to detect support for touch devices via the `touch` key. If this option is omitted touch device support will be disabled.
+  * `greeting`: initial text to display on the console.
+  * `handler`: function to be called when user presses enter. Receives parameters `(console, command)`. See 'Handling User Input', below.
+  * `prompt`: string or callback function for generating the prompt. Pass `false` if no prompt is desired. If a callback is specified, in addition to returning a string or false, it may elect to return a `<span>` element for direct insertion into the DOM. Default: `> `.
+  * `tabIndex`: the tab index of the console. Default: `0`.
+
+#### `konsole.getInput()`
+
+Returns the command that the user has entered. Throws an exception if console is not in the input state.
+
+#### `konsole.print(str)`
+
+Print a text string to the console.
+
+#### `konsole.append(el)`
+
+Append a DOM element to the console.
+
+#### `konsole.clearInput()`
+
+Clear the input bufer.
+
+#### `konsole.newline()`
+
+Prepare the console for the next line of input by generating a new prompt, updating the cursor and putting the console into input mode. You should call this function from your command handler after command processing is complete and the console is ready to accept further input.
+
+#### `konsole.focus()`
+
+Focus on the console.
+
+## Handling User Input
+
+## Copyright &amp; License
+
+&copy; 2014 Jason Frame [ [@jaz303](http://twitter.com/jaz303) / [jason@onehackoranother.com](mailto:jason@onehackoranother.com) ]
+
+Released under the ISC license.
