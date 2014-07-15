@@ -1,8 +1,14 @@
 # echo-chamber
 
-`echo-chamber` is a simple, no-frills console component built with HTML, CSS and Javascript. It looks a bit like this:
+`echo-chamber` is a simple, no-frills console component built with HTML, CSS and Javascript. It might look a bit like this:
 
+![Echo Chamber Screenshot](screenshot.png)
 
+But that's up to you - it's fully stylable with CSS.
+
+As well as text the widget can host arbitrary HTML content.
+
+__This is not an ANSI/VT100 terminal emulator!__
 
 ## Default CSS
 
