@@ -2,7 +2,7 @@
 
 `echo-chamber` is a simple, no-frills console component built with HTML, CSS and Javascript. It might look a bit like this:
 
-![Echo Chamber Screenshot](screenshot.png)
+![Echo Chamber Screenshot](https://github.com/jaz303/echo-chamber/raw/master/screenshot.png)
 
 But that's up to you - it's fully stylable with CSS.
 
@@ -18,11 +18,11 @@ In addition to the following you'll need to add some CSS to your project. Check 
 
 Get it:
 
-  npm install echo-chamber
+    npm install echo-chamber
 
 Require it:
 
-  var EchoChamber = require('echo-chamber');
+    var EchoChamber = require('echo-chamber');
 
 ### UMD
 
