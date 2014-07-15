@@ -1,0 +1,27 @@
+{
+  "name": "echo-chamber",
+  "version": "0.0.0",
+  "description": "\"terminal\" widget built with HTML/CSS/JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jaz303/echo-chamber.git"
+  },
+  "keywords": [
+    "terminal",
+    "widget",
+    "console"
+  ],
+  "author": "Jason Frame <jason@onehackoranother.com> (http://jasonframe.co.uk)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaz303/echo-chamber/issues"
+  },
+  "homepage": "https://github.com/jaz303/echo-chamber",
+  "dependencies": {
+    "domutil": "~0.3.4"
+  }
+}
