@@ -13,8 +13,11 @@ __This is not an ANSI/VT100 terminal emulator!__
 ## Default CSS
 
 ```css
+/* Console Defaults */
+
 .console {
 	line-height: 1.2;
+  overflow: auto;
 }
 
 .console:focus {
@@ -26,14 +29,15 @@ __This is not an ANSI/VT100 terminal emulator!__
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 0;
-	height: 0;
+	width: 1px;
+	height: 1px;
 	padding: 0;
 	border: none;
 	overflow: hidden;
+  background: none;
 }
 
-.console textarea:focus {
+.console > textarea:focus {
 	outline: none;
 }
 

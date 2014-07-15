@@ -35,17 +35,28 @@ function replaceVisualSpaceWithLogicalSpace(str) {
  */
 function Console(el, opts) {
 
-	this.root = el;
-	
-    this._textarea = document.createElement('textarea');
-	this.root.appendChild(this._textarea);
+    opts = opts || {};
 
-    du.bind(this.root,      'click',    this.focus.bind(this));
-    du.bind(this._textarea, 'keydown',  this._keydown.bind(this));
-    du.bind(this._textarea, 'keyup',    this._keyup.bind(this));
-    du.bind(this._textarea, 'keypress', this._keypress.bind(this));
+	this.root           = el;
+    this.state          = S_INIT;
+    this._textarea      = null;
+    this._prompt        = null;
+    this._handler       = null;
+    this._cursor        = null;
+    this._inputLine     = null;
 
-	opts = opts || {};
+    var needsTextarea = false; // TODO: determine automatically (true == tablet/phone)
+    var tabIndex = opts.tabIndex || 0;
+    
+    if (needsTextarea) {
+        this._textarea = document.createElement('textarea');
+        this._textarea.setAttribute('tabindex', tabIndex);
+        this.root.appendChild(this._textarea);
+        this._bind(this._textarea);
+    } else {
+        this.root.setAttribute('tabindex', tabIndex);
+        this._bind(this.root);
+    }
 
     if ('prompt' in opts) {
         this._prompt = opts.prompt || DEFAULT_PROMPT_NONE;
@@ -55,8 +66,6 @@ function Console(el, opts) {
 
     this._handler = opts.handler || ECHO_HANDLER;
 
-    this.state = S_INIT;
-    
     if ('greeting' in opts) {
         this.print(opts.greeting);
     }
@@ -73,7 +82,9 @@ Console.prototype.getInput = function() {
     if (this.state !== S_INPUT)
         throw new Error("cannot get console input - illegal state");
 
-    return replaceVisualSpaceWithLogicalSpace(this._getRawInputFromElement(this._inputLine));
+    return replaceVisualSpaceWithLogicalSpace(
+        this._getRawInputFromElement(this._inputLine)
+    );
     
 }
 
@@ -164,7 +175,11 @@ Console.prototype.newline = function() {
 }
 
 Console.prototype.focus = function() {
-    this._textarea.focus();
+    if (this._textarea) {
+        this._textarea.focus();    
+    } else {
+        this.root.focus();
+    }
 }
 
 //
@@ -349,4 +364,11 @@ Console.prototype._insertStringBeforeCursor = function(str) {
         ch.textContent = logicalSpaceToVisualSpace(str.charAt(i));
         this._inputLine.insertBefore(ch, this._cursor);
     }
+}
+
+Console.prototype._bind = function(consoleEl) {
+    du.bind(this.root,  'click',    this.focus.bind(this));
+    du.bind(consoleEl,  'keydown',  this._keydown.bind(this));
+    du.bind(consoleEl,  'keyup',    this._keyup.bind(this));
+    du.bind(consoleEl,  'keypress', this._keypress.bind(this));
 }
