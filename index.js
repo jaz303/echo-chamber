@@ -160,7 +160,7 @@ Console.prototype.newline = function() {
     }
     
     this._cursor = document.createElement('span');
-    this._cursor.textContent = VISUAL_SPACE;
+    du.setText(this._cursor, VISUAL_SPACE);
     this._cursor.className = 'cursor';
     this._inputLine.appendChild(this._cursor);
     
@@ -268,7 +268,7 @@ Console.prototype._getRawInputFromElement = function(el) {
         s   = el.hasPrompt ? 1 : 0;
 
     while (s < m) {
-        str += el.childNodes[s++].textContent;
+        str += du.getText(el.childNodes[s++]);
     }
     
     return str;
@@ -285,7 +285,7 @@ Console.prototype._generatePrompt = function() {
 
     if (typeof prompt === 'string') {
         var node = document.createElement('span');
-        node.textContent = prompt; // TODO: du.setText() when ready
+        du.setText(node, prompt);
         prompt = node;
     }
 
@@ -359,7 +359,7 @@ Console.prototype._insertStringBeforeCursor = function(str) {
 
     for (var i = 0; i < str.length; i++) {
         var ch = document.createElement('span');
-        ch.textContent = logicalSpaceToVisualSpace(str.charAt(i));
+        du.setText(ch, logicalSpaceToVisualSpace(str.charAt(i)));
         this._inputLine.insertBefore(ch, this._cursor);
     }
 }
