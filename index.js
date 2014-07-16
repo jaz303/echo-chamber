@@ -348,7 +348,7 @@ Console.prototype._appendLine = function(str) {
     line.appendChild(document.createTextNode(replaceLogicalSpaceWithVisualSpace(str)));
     line.appendChild(document.createElement('br'));
 
-    this.root.appendChild(line);
+    this._appendRaw(line);
 
 }
 
@@ -358,8 +358,17 @@ Console.prototype._appendElement = function(el, className) {
     wrap.className = 'item ' + (className || '');
     wrap.appendChild(el);
 
-    this.root.appendChild(wrap);
+    this._appendRaw(el);
 
+}
+
+Console.prototype._appendRaw = function(el) {
+    if (this.state === S_INPUT) {
+        this.root.insertBefore(el, this._inputLine);
+    } else {
+        this.root.appendChild(el);
+    }
+    this._scrollToBottom();
 }
 
 Console.prototype._insertStringBeforeCursor = function(str) {
