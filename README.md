@@ -10,6 +10,10 @@ As well as text the widget can host arbitrary HTML content (see `konsole.append(
 
 __This is not an ANSI/VT100 terminal emulator!__
 
+## Demo
+
+`echo-chamber` is used by [basica](https://github.com/jaz303/basica), my embeddable BASIC interpreter. [Try it here!](http://labs.curiouschip.com/basica/embed/)
+
 ## Installation
 
 In addition to the following you'll need to add some CSS to your project. Check out the Default CSS section, below, for a starting point.
