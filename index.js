@@ -69,8 +69,6 @@ function Console(el, opts) {
         this.print(opts.greeting);
     }
 
-    this.newline();
-
 }
 
 //
