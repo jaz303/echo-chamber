@@ -94,8 +94,6 @@ Console.prototype.getInput = function() {
 }
 
 Console.prototype.print = function(str) {
-
-    if (!str) return;
     
     var start = 0, end = str.indexOf("\n", start);
     while (end >= 0) {
