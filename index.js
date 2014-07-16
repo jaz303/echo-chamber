@@ -235,10 +235,13 @@ Console.prototype._keypress = function(evt) {
 
     if (this.state === S_INPUT) {
 
+        // Enter
         if (evt.charCode === 13 || evt.keyCode === 13) {
             evt.preventDefault();
             this._clearSelection();
             input = this.getInput();
+            du.removeClass(this._cursor, 'cursor');
+            this._cursor = null;
             this.state = S_PROCESSING;
             this._handler(this, input);
             return;
