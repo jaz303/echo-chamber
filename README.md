@@ -86,6 +86,7 @@ Supported options:
   * `capabilities`: a `Modernizr`-like feature-detection object, used to detect support for touch devices via the `touch` key. If this option is omitted touch device support will be disabled.
   * `greeting`: initial text to display on the console.
   * `handler`: function to be called when user presses enter. Receives parameters `(console, command)`. See 'Handling User Input', below.
+  * `cancel`: function to be called if user presses escape whilst console is in processing state. Receives parameters `(console)`.
   * `prompt`: string or callback function for generating the prompt. Pass `false` if no prompt is desired. If a callback is specified, in addition to returning a string or false, it may elect to return a `<span>` element for direct insertion into the DOM. Default: `> `.
   * `tabIndex`: the tab index of the console. Default: `0`.
 

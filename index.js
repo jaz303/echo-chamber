@@ -42,6 +42,7 @@ function Console(el, opts) {
     this._textarea      = null;
     this._prompt        = null;
     this._handler       = opts.handler || NULL_HANDLER;
+    this._cancel        = opts.cancel || NULL_HANDLER;
     this._cursor        = null;
     this._inputLine     = null;
 
@@ -227,7 +228,7 @@ Console.prototype._keyup = function(evt) {
             if (this.state === S_INPUT) {
                 this.clearInput();
             } else if (this.state === S_PROCESSING) {
-                // send cancel message to handler?
+                this._cancel(this);
             }
             break;
     }
