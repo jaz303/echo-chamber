@@ -8,7 +8,7 @@ var S_INIT              = 0,
 
 var DEFAULT_PROMPT      = '> ';
 var DEFAULT_PROMPT_NONE = null;
-var ECHO_HANDLER        = function(console, cmd) { console.print(cmd); console.newline(); }
+var NULL_HANDLER        = function(console, cmd) { console.newline(); }
 
 //
 // Space Handling
@@ -41,7 +41,7 @@ function Console(el, opts) {
     this.state          = S_INIT;
     this._textarea      = null;
     this._prompt        = null;
-    this._handler       = opts.handler || ECHO_HANDLER;
+    this._handler       = opts.handler || NULL_HANDLER;
     this._cursor        = null;
     this._inputLine     = null;
 
@@ -74,6 +74,14 @@ function Console(el, opts) {
 
 //
 // Public API
+
+Console.prototype.setHandler = function(handler) {
+    this._handler = handler || NULL_HANDLER;
+}
+
+Console.prototype.setPrompt = function(prompt) {
+    this._prompt = prompt;
+}
 
 Console.prototype.getInput = function() {
     

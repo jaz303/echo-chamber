@@ -9,7 +9,7 @@ var S_INIT              = 0,
 
 var DEFAULT_PROMPT      = '> ';
 var DEFAULT_PROMPT_NONE = null;
-var ECHO_HANDLER        = function(console, cmd) { console.print(cmd); console.newline(); }
+var NULL_HANDLER        = function(console, cmd) { console.newline(); }
 
 //
 // Space Handling
@@ -42,7 +42,7 @@ function Console(el, opts) {
     this.state          = S_INIT;
     this._textarea      = null;
     this._prompt        = null;
-    this._handler       = opts.handler || ECHO_HANDLER;
+    this._handler       = opts.handler || NULL_HANDLER;
     this._cursor        = null;
     this._inputLine     = null;
 
@@ -75,6 +75,14 @@ function Console(el, opts) {
 
 //
 // Public API
+
+Console.prototype.setHandler = function(handler) {
+    this._handler = handler || NULL_HANDLER;
+}
+
+Console.prototype.setPrompt = function(prompt) {
+    this._prompt = prompt;
+}
 
 Console.prototype.getInput = function() {
     
@@ -161,7 +169,7 @@ Console.prototype.newline = function() {
     }
     
     this._cursor = document.createElement('span');
-    this._cursor.textContent = VISUAL_SPACE;
+    du.setText(this._cursor, VISUAL_SPACE);
     this._cursor.className = 'cursor';
     this._inputLine.appendChild(this._cursor);
     
@@ -269,7 +277,7 @@ Console.prototype._getRawInputFromElement = function(el) {
         s   = el.hasPrompt ? 1 : 0;
 
     while (s < m) {
-        str += el.childNodes[s++].textContent;
+        str += du.getText(el.childNodes[s++]);
     }
     
     return str;
@@ -286,7 +294,7 @@ Console.prototype._generatePrompt = function() {
 
     if (typeof prompt === 'string') {
         var node = document.createElement('span');
-        node.textContent = prompt; // TODO: du.setText() when ready
+        du.setText(node, prompt);
         prompt = node;
     }
 
@@ -360,7 +368,7 @@ Console.prototype._insertStringBeforeCursor = function(str) {
 
     for (var i = 0; i < str.length; i++) {
         var ch = document.createElement('span');
-        ch.textContent = logicalSpaceToVisualSpace(str.charAt(i));
+        du.setText(ch, logicalSpaceToVisualSpace(str.charAt(i)));
         this._inputLine.insertBefore(ch, this._cursor);
     }
 }
@@ -371,7 +379,7 @@ Console.prototype._bind = function(consoleEl) {
     du.bind(consoleEl,  'keyup',    this._keyup.bind(this));
     du.bind(consoleEl,  'keypress', this._keypress.bind(this));
 }
-},{"domutil":8}],2:[function(_dereq_,module,exports){
+},{"domutil":9}],2:[function(_dereq_,module,exports){
 if (typeof window.DOMTokenList === 'undefined') {
 
 	// Constants from jQuery
@@ -618,6 +626,28 @@ exports.replace = function(oldEl, newEl) {
 	oldEl.parentNode.replaceChild(newEl, oldEl);
 }
 },{}],7:[function(_dereq_,module,exports){
+if ('textContent' in document.createElement('span')) {
+    
+    exports.getText = function(el) {
+        return el.textContent;
+    }
+
+    exports.setText = function(el, text) {
+        el.textContent = text;
+    }
+
+} else {
+
+    exports.getText = function(el) {
+        return el.innerText;
+    }
+
+    exports.setText = function(el, text) {
+        el.innerText = text;
+    }
+
+}
+},{}],8:[function(_dereq_,module,exports){
 // http://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript
 exports.viewportSize = function() {
 	return {
@@ -625,7 +655,7 @@ exports.viewportSize = function() {
 	    height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 	};
 }
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var du = module.exports = {};
 
 extend(_dereq_('./impl/classes'));
@@ -633,6 +663,7 @@ extend(_dereq_('./impl/events'));
 extend(_dereq_('./impl/layout'));
 extend(_dereq_('./impl/matches_selector'));
 extend(_dereq_('./impl/node'));
+extend(_dereq_('./impl/text'));
 extend(_dereq_('./impl/viewport'));
 
 function extend(things) {
@@ -641,6 +672,6 @@ function extend(things) {
     }
 }
 
-},{"./impl/classes":2,"./impl/events":3,"./impl/layout":4,"./impl/matches_selector":5,"./impl/node":6,"./impl/viewport":7}]},{},[1])
+},{"./impl/classes":2,"./impl/events":3,"./impl/layout":4,"./impl/matches_selector":5,"./impl/node":6,"./impl/text":7,"./impl/viewport":8}]},{},[1])
 (1)
 });
