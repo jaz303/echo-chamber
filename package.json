@@ -1,6 +1,6 @@
 {
   "name": "echo-chamber",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "\"terminal\" widget built with HTML/CSS/JS",
   "main": "index.js",
   "scripts": {
