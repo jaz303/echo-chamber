@@ -1,5 +1,5 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.EchoChamber=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var du = _dereq_('domutil');
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.EchoChamber=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var du = require('domutil');
 
 module.exports = Console;
 
@@ -43,6 +43,7 @@ function Console(el, opts) {
     this._textarea      = null;
     this._prompt        = null;
     this._handler       = opts.handler || NULL_HANDLER;
+    this._cancel        = opts.cancel || NULL_HANDLER;
     this._cursor        = null;
     this._inputLine     = null;
 
@@ -69,8 +70,6 @@ function Console(el, opts) {
         this.print(opts.greeting);
     }
 
-    this.newline();
-
 }
 
 //
@@ -96,8 +95,6 @@ Console.prototype.getInput = function() {
 }
 
 Console.prototype.print = function(str) {
-
-    if (!str) return;
     
     var start = 0, end = str.indexOf("\n", start);
     while (end >= 0) {
@@ -169,7 +166,7 @@ Console.prototype.newline = function() {
     }
     
     this._cursor = document.createElement('span');
-    du.setText(this._cursor, VISUAL_SPACE);
+    du.text(this._cursor, VISUAL_SPACE);
     this._cursor.className = 'cursor';
     this._inputLine.appendChild(this._cursor);
     
@@ -228,7 +225,7 @@ Console.prototype._keyup = function(evt) {
             if (this.state === S_INPUT) {
                 this.clearInput();
             } else if (this.state === S_PROCESSING) {
-                // send cancel message to handler?
+                this._cancel(this);
             }
             break;
     }
@@ -239,10 +236,13 @@ Console.prototype._keypress = function(evt) {
 
     if (this.state === S_INPUT) {
 
+        // Enter
         if (evt.charCode === 13 || evt.keyCode === 13) {
             evt.preventDefault();
             this._clearSelection();
             input = this.getInput();
+            du.removeClass(this._cursor, 'cursor');
+            this._cursor = null;
             this.state = S_PROCESSING;
             this._handler(this, input);
             return;
@@ -294,7 +294,7 @@ Console.prototype._generatePrompt = function() {
 
     if (typeof prompt === 'string') {
         var node = document.createElement('span');
-        du.setText(node, prompt);
+        du.text(node, prompt);
         prompt = node;
     }
 
@@ -349,7 +349,7 @@ Console.prototype._appendLine = function(str) {
     line.appendChild(document.createTextNode(replaceLogicalSpaceWithVisualSpace(str)));
     line.appendChild(document.createElement('br'));
 
-    this.root.appendChild(line);
+    this._appendRaw(line);
 
 }
 
@@ -359,8 +359,17 @@ Console.prototype._appendElement = function(el, className) {
     wrap.className = 'item ' + (className || '');
     wrap.appendChild(el);
 
-    this.root.appendChild(wrap);
+    this._appendRaw(el);
 
+}
+
+Console.prototype._appendRaw = function(el) {
+    if (this.state === S_INPUT) {
+        this.root.insertBefore(el, this._inputLine);
+    } else {
+        this.root.appendChild(el);
+    }
+    this._scrollToBottom();
 }
 
 Console.prototype._insertStringBeforeCursor = function(str) {
@@ -368,7 +377,7 @@ Console.prototype._insertStringBeforeCursor = function(str) {
 
     for (var i = 0; i < str.length; i++) {
         var ch = document.createElement('span');
-        du.setText(ch, logicalSpaceToVisualSpace(str.charAt(i)));
+        du.text(ch, logicalSpaceToVisualSpace(str.charAt(i)));
         this._inputLine.insertBefore(ch, this._cursor);
     }
 }
@@ -379,7 +388,7 @@ Console.prototype._bind = function(consoleEl) {
     du.bind(consoleEl,  'keyup',    this._keyup.bind(this));
     du.bind(consoleEl,  'keypress', this._keypress.bind(this));
 }
-},{"domutil":9}],2:[function(_dereq_,module,exports){
+},{"domutil":10}],2:[function(require,module,exports){
 if (typeof window.DOMTokenList === 'undefined') {
 
 	// Constants from jQuery
@@ -480,8 +489,8 @@ if (typeof window.DOMTokenList === 'undefined') {
 
 }
 
-},{}],3:[function(_dereq_,module,exports){
-var matchesSelector = _dereq_('./matches_selector').matchesSelector;
+},{}],3:[function(require,module,exports){
+var matchesSelector = require('./matches_selector').matchesSelector;
 
 var bind = null, unbind = null;
 
@@ -576,7 +585,7 @@ exports.delegate = delegate;
 exports.bind_c = bind_c;
 exports.delegate_c = delegate_c;
 exports.stop = stop;
-},{"./matches_selector":5}],4:[function(_dereq_,module,exports){
+},{"./matches_selector":5}],4:[function(require,module,exports){
 exports.setRect = function(el, x, y, width, height) {
 	el.style.left = x + 'px';
     el.style.top = y + 'px';
@@ -593,7 +602,7 @@ exports.setSize = function(el, width, height) {
     el.style.width = width + 'px';
     el.style.height = height + 'px';
 }
-},{}],5:[function(_dereq_,module,exports){
+},{}],5:[function(require,module,exports){
 var proto = window.Element.prototype;
 var nativeMatch = proto.webkitMatchesSelector
 					|| proto.mozMatchesSelector
@@ -617,7 +626,29 @@ if (nativeMatch) {
 
 }
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],6:[function(require,module,exports){
+exports.append = append;
+function append(el, content) {
+	if (Array.isArray(content)) {
+		for (var i = 0, l = content.length; i < l; ++i) {
+			append(el, content[i]);
+		}
+	} else if (typeof content === 'string') {
+		if (content.charAt(0) === '<') {
+			el.innerHTML += content;
+		} else {
+			el.appendChild(document.createTextNode(content));
+		}
+	} else {
+		el.appendChild(content);
+	}
+}
+
+exports.clear = clear;
+function clear(el) {
+	el.innerHTML = '';
+}
+
 exports.isElement = function(el) {
 	return el && el.nodeType === 1;
 }
@@ -625,14 +656,41 @@ exports.isElement = function(el) {
 exports.replace = function(oldEl, newEl) {
 	oldEl.parentNode.replaceChild(newEl, oldEl);
 }
-},{}],7:[function(_dereq_,module,exports){
+
+exports.content = function(el, content) {
+	clear(el);
+	append(el, content);
+}
+},{}],7:[function(require,module,exports){
+function v(val) {
+    if (typeof val === 'number') {
+        return val + 'px';
+    } else {
+        return val;
+    }
+}
+
+exports.style = function(el, attribute, value) {
+    if (typeof attribute === 'string') {
+        el.style[attribute] = v(value);
+    } else {
+        for (var k in attribute) {
+            el.style[k] = v(attribute[k]);
+        }
+    }
+}
+
+exports.removeStyle = function(el, attribute) {
+    el.style[attribute] = '';
+}
+},{}],8:[function(require,module,exports){
 if ('textContent' in document.createElement('span')) {
     
     exports.getText = function(el) {
         return el.textContent;
     }
 
-    exports.setText = function(el, text) {
+    exports.text = function(el, text) {
         el.textContent = text;
     }
 
@@ -642,12 +700,12 @@ if ('textContent' in document.createElement('span')) {
         return el.innerText;
     }
 
-    exports.setText = function(el, text) {
+    exports.text = function(el, text) {
         el.innerText = text;
     }
 
 }
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(require,module,exports){
 // http://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript
 exports.viewportSize = function() {
 	return {
@@ -655,16 +713,17 @@ exports.viewportSize = function() {
 	    height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 	};
 }
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(require,module,exports){
 var du = module.exports = {};
 
-extend(_dereq_('./impl/classes'));
-extend(_dereq_('./impl/events'));
-extend(_dereq_('./impl/layout'));
-extend(_dereq_('./impl/matches_selector'));
-extend(_dereq_('./impl/node'));
-extend(_dereq_('./impl/text'));
-extend(_dereq_('./impl/viewport'));
+extend(require('./impl/classes'));
+extend(require('./impl/events'));
+extend(require('./impl/layout'));
+extend(require('./impl/matches_selector'));
+extend(require('./impl/node'));
+extend(require('./impl/style'));
+extend(require('./impl/text'));
+extend(require('./impl/viewport'));
 
 function extend(things) {
     for (var k in things) {
@@ -672,6 +731,5 @@ function extend(things) {
     }
 }
 
-},{"./impl/classes":2,"./impl/events":3,"./impl/layout":4,"./impl/matches_selector":5,"./impl/node":6,"./impl/text":7,"./impl/viewport":8}]},{},[1])
-(1)
+},{"./impl/classes":2,"./impl/events":3,"./impl/layout":4,"./impl/matches_selector":5,"./impl/node":6,"./impl/style":7,"./impl/text":8,"./impl/viewport":9}]},{},[1])(1)
 });

@@ -165,7 +165,7 @@ Console.prototype.newline = function() {
     }
     
     this._cursor = document.createElement('span');
-    du.setText(this._cursor, VISUAL_SPACE);
+    du.text(this._cursor, VISUAL_SPACE);
     this._cursor.className = 'cursor';
     this._inputLine.appendChild(this._cursor);
     
@@ -293,7 +293,7 @@ Console.prototype._generatePrompt = function() {
 
     if (typeof prompt === 'string') {
         var node = document.createElement('span');
-        du.setText(node, prompt);
+        du.text(node, prompt);
         prompt = node;
     }
 
@@ -376,7 +376,7 @@ Console.prototype._insertStringBeforeCursor = function(str) {
 
     for (var i = 0; i < str.length; i++) {
         var ch = document.createElement('span');
-        du.setText(ch, logicalSpaceToVisualSpace(str.charAt(i)));
+        du.text(ch, logicalSpaceToVisualSpace(str.charAt(i)));
         this._inputLine.insertBefore(ch, this._cursor);
     }
 }

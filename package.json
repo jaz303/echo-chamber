@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jaz303/echo-chamber",
   "dependencies": {
-    "domutil": "~0.3.5"
+    "domutil": "^1.0.0"
   },
   "devDependencies": {
     "uglify-js": "~2.4.15"
